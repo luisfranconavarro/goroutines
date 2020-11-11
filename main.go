@@ -5,29 +5,50 @@ import (
 	"time"
 )
 
-var parar int64
+var bandera int64
+
+type Proceso struct {
+	Id, i int64
+}
 
 type Procesos struct{
 	SliceProcesos []Proceso
 }
 
-func (ps *Procesos) AgregarProceso(p Proceso){
+func (ps *Procesos) Agregar(p Proceso){
 	ps.SliceProcesos = append(ps.SliceProcesos,p)
 
 
 	for iterador:=0;iterador<len(ps.SliceProcesos);iterador=iterador+1{
-		go ps.SliceProcesos[iterador].HacerProceso()
+		go ps.SliceProcesos[iterador].Hacer()
 	}
 }
 
-func (ps *Procesos) MostrarProcesos(){
+func (ps *Procesos) Mostrar(){
 	for i:=0;i < len(ps.SliceProcesos);i = i +1{
-		go ps.SliceProcesos[i].MostrarProceso()
+		go ps.SliceProcesos[i].Mostrar()
 	}
 }
 
+func (p *Proceso) Hacer() {
+	for {
+		p.i = p.i + 1
+		time.Sleep(time.Millisecond * 500)
+	}
+}
 
-func (ps *Procesos) EliminarProceso(b int64){
+func (p *Proceso) Mostrar() {
+	for {
+		fmt.Println(p.Id,": " ,p.i)
+		time.Sleep(time.Millisecond * 500)
+
+		if bandera == 2{
+			return
+		}
+	}
+}
+
+func (ps *Procesos) Eliminar(b int64){
 	var posicion int
 
 	posicion = -1
@@ -47,56 +68,28 @@ func (ps *Procesos) EliminarProceso(b int64){
 	}
 }
 
-
-type Proceso struct {
-	Id int64
-	I int64
-}
-
-func (p *Proceso) HacerProceso() {
-	for {
-		p.I = p.I + 1
-		time.Sleep(time.Millisecond * 500)
-	}
-}
-
-func (p *Proceso) MostrarProceso() {
-	for {
-		fmt.Println(p.Id,": " ,p.I)
-		time.Sleep(time.Millisecond * 500)
-
-		if parar == 2{
-			return
-		}
-	}
-}
-
-
 func main()  {
-	var opcion int64
-	var id int64
-	var datoEliminar int64
+	var opcion, id, eliminar int64
 	id = 0
 
 	procesos:= Procesos{}
 
 	for{
-		
 		fmt.Println("Menu \n1.- Agregar proceso\n2.- Mostrar procesos\n3.- Terminar proceso\n4.- Salir")
 		fmt.Print("Opcion: ")
 		fmt.Scanln(&opcion)
 
 		if (opcion == 1){
-			procesos.AgregarProceso(Proceso{Id:id,I:0})
+			procesos.Agregar(Proceso{Id:id,i:0})
 			id = id + 1
 
 		} else if (opcion == 2){
-			parar = 0
-			procesos.MostrarProcesos()
-			fmt.Scanln(&parar)
+			bandera = 0
+			procesos.Mostrar()
+			fmt.Scanln(&bandera)
 		} else if (opcion == 3){
-			fmt.Scanln(&datoEliminar)
-			procesos.EliminarProceso(datoEliminar)
+			fmt.Scanln(&eliminar)
+			procesos.Eliminar(eliminar)
 		} else if (opcion == 4){
 			break
 		}
